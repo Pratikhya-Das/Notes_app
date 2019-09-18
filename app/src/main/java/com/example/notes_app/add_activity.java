@@ -47,17 +47,22 @@ public class add_activity extends AppCompatActivity {
         else if (intentType.equals("UPDATE"))
         {
 
-            Note note=getIntent().getParcelableExtra("NOTE");
+            final Note note=getIntent().getParcelableExtra("NOTE");
             mEttitle.setText(note.getTitle());
             mEttext.setText(note.getText());
-            helper = new Dbhelper(this);
-            helper.updateNote(note);
+//            helper = new Dbhelper(this);
+//            helper.updateNote(note);
             mIbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String title = mEttitle.getText().toString().trim();
                     String text = mEttext.getText().toString().trim();
-                    savetoDb(title, text);
+                    Note note1 = new Note();
+                    note1.setId(note.getId());
+                    note1.setText(text);
+                    note1.setTitle(title);
+                    updateDb(note1);
+
                 }
             });
 
@@ -67,12 +72,19 @@ public class add_activity extends AppCompatActivity {
 
     }
 
+    private void updateDb(Note note) {
+        helper = new Dbhelper(add_activity.this);
+        helper.updateNote(note);
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
+
+    }
 
 
     private void savetoDb(String title, String text) {
         helper = new Dbhelper(add_activity.this);
         helper.insertNote(title, text);
-
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         finish();

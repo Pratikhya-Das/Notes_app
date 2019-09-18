@@ -24,10 +24,11 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnIte
     FloatingActionButton mBtn;
     Dbhelper helper;
     RecyclerView mRv;
-    private  NoteAdapter adapter;
+    private NoteAdapter adapter;
     TextView mTvNoItems;
     NoteAdapter.OnItemClickListener listener;
     private static int REQ_CODE_ADD = 100;
+    private static int REQ_CODE_UPDATE = 101;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -35,6 +36,11 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnIte
 
         if (requestCode == REQ_CODE_ADD && resultCode == RESULT_OK) {
             assert data != null;
+            helper = new Dbhelper(this);
+
+            setupAdapter();
+
+        } else if (requestCode == REQ_CODE_UPDATE && resultCode == RESULT_OK) {
             helper = new Dbhelper(this);
 
             setupAdapter();
@@ -53,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnIte
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, add_activity.class);
-                intent.putExtra("EXTRA_TYPE","ADD");
+                intent.putExtra("EXTRA_TYPE", "ADD");
                 startActivityForResult(intent, REQ_CODE_ADD);
             }
         });
@@ -64,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnIte
         setupAdapter();
 
 
-
     }
 
     private void setupAdapter() {
@@ -72,17 +77,19 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnIte
         helper = new Dbhelper(this);
         list = helper.getNotes();
 
-        if (list.size() > 0){
+        if (list.size() > 0) {
             mTvNoItems.setVisibility(View.GONE);
+            mRv.setVisibility(View.VISIBLE);
             NoteAdapter adapter = new NoteAdapter(MainActivity.this, list);
             adapter.setListener(this);
             mRv.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
 
-        }else {
+
+        } else {
             mTvNoItems.setVisibility(View.VISIBLE);
             mRv.setVisibility(View.GONE);
         }
-
 
 
     }
@@ -91,25 +98,25 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.OnIte
     public void onUpdate(Note note) {
 
         Intent updateIntent = new Intent(MainActivity.this, add_activity.class);
-        updateIntent.putExtra("EXTRA_TYPE","UPDATE");
-        updateIntent.putExtra("NOTE",note);
-        startActivityForResult(updateIntent, REQ_CODE_ADD);
-       //startActivity(updateIntent);
+        updateIntent.putExtra("EXTRA_TYPE", "UPDATE");
+        updateIntent.putExtra("NOTE", note);
+        startActivityForResult(updateIntent, REQ_CODE_UPDATE);
+        //startActivity(updateIntent);
 
         helper = new Dbhelper(this);
         helper.updateNote(note);
-       // adapter.notifyDataSetChanged();
         setupAdapter();
     }
 
     @Override
-    public void onDelete(int id) {
-        Note note = new Note();
-       // id = note.getId();
+    public void onDelete(Note note) {
+//        Note note = new Note();
+        // id = note.getId();
         helper = new Dbhelper(this);
         helper.deleteNote(note);
         setupAdapter();
 
     }
+
 
 }

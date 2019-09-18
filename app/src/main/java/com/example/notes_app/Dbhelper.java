@@ -80,15 +80,15 @@ public class Dbhelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(note.COLUMN_ID,note.getId());
-        values.put(note.TITLE,note.getTitle());
-        values.put(note.TEXT,note.getText());
-        return db.update(TABLE_NAME,values, COLUMN_ID + " = ?",new String[]{String.valueOf(note.getId())});
+        values.put(Note.COLUMN_ID,note.getId());
+        values.put(Note.TITLE,note.getTitle());
+        values.put(Note.TEXT,note.getText());
+        return db.update(Note.TABLE_NAME,values, COLUMN_ID + "=",new String[]{String.valueOf(note.getId())});
     }
     public void deleteNote(Note note)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(note.TABLE_NAME, COLUMN_ID + " = ?",new String[]{String.valueOf(note.getId())});
+        db.delete(Note.TABLE_NAME, Note.TEXT + "=?",new String[]{String.valueOf(note.getText())});
         db.close();
     }
 }
